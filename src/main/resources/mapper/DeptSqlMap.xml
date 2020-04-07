@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.auc.mavendemo.mapper.DeptMapper">
+
+    <resultMap id="DemoMap" type="com.auc.mavendemo.entity.Demo">
+        <result column="MNAME" property="title"></result>
+        <result column="MID" property="id"></result>
+    </resultMap>
+
+    <select id="findById" resultType="com.auc.mavendemo.entity.User" parameterType="com.auc.mavendemo.entity.User">
+		select * from USERTBL where ACCOUNT = #{account} and PASSWORD = #{password}
+	</select>
+
+    <select id="judgeAccount" resultType="com.auc.mavendemo.entity.User" parameterType="String">
+		select * from USERTBL where ACCOUNT = #{account}
+	</select>
+
+    <insert id="reg" parameterType="com.auc.mavendemo.entity.User">
+		insert into USERTBL (ACCOUNT,PASSWORD,RID) values (#{account},#{password},2)
+	</insert>
+
+    <select id="findCountInfo" parameterType="java.lang.String" resultType="int">
+        select count(*) from info
+        <where>
+            <if test="name!=null">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="findInfo" parameterType="java.util.Map" resultType="com.auc.mavendemo.entity.Test">
+        select * from info
+        <where>
+            <if test="name!=null">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+        limit #{begin},#{end}
+    </select>
+
+    <insert id="addInfo" parameterType="com.auc.mavendemo.entity.Test">
+		insert into info (name,money,address,tel) values (#{name},'0',#{address},#{tel})
+	</insert>
+
+    <update id="updateInfo" parameterType="com.auc.mavendemo.entity.Test">
+        update info set name=#{name},address=#{address},tel=#{tel} where id=#{id}
+    </update>
+
+    <delete id="deleteInfo" parameterType="int">
+        delete from info where id=#{id}
+    </delete>
+
+    <select id="findFile" parameterType="java.util.Map" resultType="com.auc.mavendemo.entity.FileInfo">
+        select * from file
+        <where>
+            <if test="name!=null">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+        limit #{begin},#{end}
+    </select>
+
+    <select id="findCountFile" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*) from file
+        <where>
+            <if test="name!=null">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <insert id="addLog" parameterType="com.auc.mavendemo.entity.SystemLog">
+        insert into log (loguser, logtype, logdetail, logdate, logresult) values (#{loguser},#{logtype},#{logdetail},#{logdate},#{logresult})
+    </insert>
+
+
+<!--    <select id="selectByUid" parameterType="String" resultMap="userInfo">-->
+<!--        select u.uid,u.account,u.password,i.id,i.name,i.money,i.tel,i.address-->
+<!--         from usertbl u join info i on u.uid=i.id where u.account=#{account}-->
+<!--    </select>-->
+
+<!--    <resultMap id="userInfo" type="com.auc.entity.Test">-->
+<!--        <id property="id" column="id"/>-->
+<!--        <result property="name" column="name"/>-->
+<!--        <result property="money" column="money"/>-->
+<!--        <result property="address" column="address"/>-->
+<!--        <result property="tel" column="tel"/>-->
+<!--        <association property="user" javaType="com.auc.entity.User" column="uid">-->
+<!--            <id property="uid" column="uid"/>-->
+<!--            <result property="account" column="account"/>-->
+<!--            <result property="password" column="password"/>-->
+<!--        </association>-->
+<!--    </resultMap>-->
+
+
+
+<!--    <select id="selectByUid" parameterType="String" resultMap="userInfo">-->
+<!--        select u.uid,u.account,u.password,i.id,i.name,i.money,i.tel,i.address-->
+<!--         from usertbl u join info i on u.uid=i.id where u.account=#{account}-->
+<!--    </select>-->
+
+<!--    <resultMap id="userInfo" type="com.auc.entity.Test">-->
+<!--        <id property="id" column="id"/>-->
+<!--        <result property="name" column="name"/>-->
+<!--        <result property="money" column="money"/>-->
+<!--        <result property="address" column="address"/>-->
+<!--        <result property="tel" column="tel"/>-->
+<!--        <collection property="userList" ofType="com.auc.entity.User" column="uid">-->
+<!--            <id property="uid" column="uid"/>-->
+<!--            <result property="account" column="account"/>-->
+<!--            <result property="password" column="password"/>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+
+
+
+
+
+    <select id="selectMenu" parameterType="java.util.Map" resultMap="menuInfo">
+        select r.*,m.*
+         from rmtable r join menutable m on r.mid=m.mid where r.rid=#{rid} and m.parentid=#{parentid}
+    </select>
+
+    <resultMap id="menuInfo" type="com.auc.mavendemo.entity.Rolemenu">
+        <id property="rmid" column="rmid"/>
+        <result property="rid" column="rid"/>
+        <result property="mid" column="mid"/>
+        <association property="menu" javaType="com.auc.mavendemo.entity.Menu" column="mid">
+            <id property="mid" column="mid"/>
+            <result property="mname" column="mname"/>
+            <result property="parentid" column="parentid"/>
+            <result property="url" column="url"/>
+        </association>
+    </resultMap>
+
+
+    <select id="findMenu" parameterType="java.util.Map" resultMap="DemoMap">
+        select m.mname,m.MID
+         from menutable m left join rmtable r on r.mid=m.mid where r.rid=#{rid} and m.parentid=#{parentid}
+    </select>
+
+    <select id="findAllMenu" parameterType="int" resultMap="DemoMap">
+        select mname,MID
+         from menutable where parentid=#{parentid}
+    </select>
+
+    <delete id="deleteMenu" parameterType="int">
+        delete from rmtable where rid=#{rid}
+    </delete>
+
+    <insert id="addMenu" parameterType="java.util.Map">
+        insert into rmtable (rid,mid) values (#{rid},#{mid})
+    </insert>
+
+    <insert id="upload" parameterType="com.auc.mavendemo.entity.FileInfo">
+        insert into file (name,score,account,type,time,state) values (#{name},#{score},#{account},#{type},#{time},#{state})
+    </insert>
+</mapper>
